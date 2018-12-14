@@ -37,7 +37,7 @@ SceneController.prototype.setupGUI = function()
     };
 
     this.gui.add(this.params, 'magnitude', 0.0, 1.0).name("Magnitude").onChange(function(newValue){this.object.screenController.updateModel()});
-    this.gui.add(this.params, 'shader', [ 'simple', 'dynamic', 'flat'] ).name('Shader').onChange(function(newValue){this.object.screenController.changeShader()});
+    this.gui.add(this.params, 'shader', [ 'simple', 'dynamic', 'flat', 'Gouraud'] ).name('Shader').onChange(function(newValue){this.object.screenController.changeShader()});
 
     this.gui.open();
 }
@@ -78,11 +78,18 @@ SceneController.prototype.setupControls = function()
 // check out this very simple shader example https://gist.github.com/kylemcdonald/9593057
 SceneController.prototype.setupGeometry = function()
 {
+    this.light3 = new THREE.PointLight( 0xffffff, 1, 100 );
+    this.light3.position.set( -10.0, 10.0, 10.0 );
+    this.scene.add( this.light3 );
+    this.lightWorldPos = new THREE.Vector3();
+    this.light3.getWorldPosition(this.lightWorldPos);
     //expand the uniforms array for passing more values to the shader
 		this.uniforms = {
-			magnitude: { type: "f", value: this.params.magnitude }
+			magnitude: { type: "f", value: this.params.magnitude },
+            lightPositionX: { type: "f", value: this.lightWorldPos.x},
+            lightPositionY: { type: "f", value: this.lightWorldPos.y},
+            lightPositionZ: { type: "f", value: this.lightWorldPos.z},
 		};
-
     this.material = new THREE.ShaderMaterial( {
       uniforms : this.uniforms,
       vertexShader: document.getElementById( 'vertex-simple' ).textContent,
@@ -105,6 +112,7 @@ SceneController.prototype.setupGeometry = function()
 
   	this.mesh = new THREE.Mesh( this.geometry, this.material );
     this.scene.add( this.mesh );
+    console.log(this.scene);
 }
 
 //the light is only used for visualizing the light

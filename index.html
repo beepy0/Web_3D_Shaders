@@ -98,7 +98,56 @@
       varying vec3 vNormal;
     	void main()
       {
-        gl_FragColor = vec4((vNormal + 0.5) * 0.65 * magnitude , 1.0);
+        gl_FragColor = vec4((vNormal + vec3(1.0,1.0,1.0)) / 2.0 * magnitude , 1.0);
+    	}
+    </script>
+
+    <script id="vertex-Gouraud" type="x-shader/x-vertex">
+
+      //the variable magnitude is passed through from Javascript
+      uniform float magnitude;
+
+      //we create a varying variable "vNormal" to pass the normal to the fragment shader
+      varying vec3 vNormal;
+      varying float luminance;
+      uniform float lightPositionX;
+      uniform float lightPositionY;
+      uniform float lightPositionZ;
+
+    	void main()
+      {
+        //normal is a built-in uniform, like projectionMatrix, modelViewMatrix and position
+        vec3 incomingLight = vec3(lightPositionX, lightPositionY, lightPositionZ);
+        vec4 vertexWorldPos = modelMatrix * vec4(position, 1.0);
+        vec3 surfaceToLightL = incomingLight - vertexWorldPos.xyz;
+        vec3 surfaceToCameraE = cameraPosition - vertexWorldPos.xyz;
+        vec3 refractionVectorR = (2.0 * (normal * (dot(normal, surfaceToLightL)))) - surfaceToLightL;
+        float diffuseReflectionRs = 0.3 * pow(dot(refractionVectorR, surfaceToCameraE), magnitude);
+        float reflectedSpecularRadianceLspec = 0.0;
+        if (dot(refractionVectorR, surfaceToCameraE) > 0.0) {
+            reflectedSpecularRadianceLspec = diffuseReflectionRs * 1.0 * pow(dot(refractionVectorR, surfaceToCameraE), magnitude);
+        }
+        luminance = reflectedSpecularRadianceLspec;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+
+    	}
+    </script>
+
+    <script id="fragment-Gouraud" type="x-shader/x-fragment">
+
+      //the variable magnitude is passed through from Javascript
+      uniform float magnitude;
+
+      //the normal is passed through from the vertex shader. Currently not used.
+      varying vec3 vNormal;
+      varying float luminance;
+
+    	void main()
+      {
+        float lumX = min(0.5 + luminance, 1.0);
+        float lumY = min(0.0 + luminance, 1.0);
+        float lumZ = min(0.5 + luminance, 1.0);
+        gl_FragColor = vec4(vec3(lumX, lumY, lumZ) , 1.0);
     	}
     </script>
 

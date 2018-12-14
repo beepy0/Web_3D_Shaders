@@ -1,0 +1,15 @@
+/* default: white background, sans serif font */
+body {
+    font-family:Arial,Helvetica;
+    background-color:white;
+    margin: 0px;
+    border: 0px;
+}
+
+/* region to display an error */
+#error {
+    color:white;
+    font-weight:bold;
+    background-color:red;
+    display:none;
+}

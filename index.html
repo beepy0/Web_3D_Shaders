@@ -1,0 +1,106 @@
+<html>
+<head>
+
+    <title>CG1 Exercise 03 - Shader</title>
+
+    <!-- import main JavaScript module using RequireJS -->
+    <script src="js/libs/three.min.js"></script>
+		<script src="js/libs/controls/OrbitControls.js"></script>
+		<script src="js/libs/controls/TrackballControls.js"></script>
+    <script src="js/libs/stats.min.js"></script>
+		<script src="js/libs/Tween.js"></script>
+		<script src="js/libs/dat.gui.min.js"></script>
+
+    <script src="js/util.js"></script>
+    <script src="js/scenecontroller.js"></script>
+    <script src="js/htmlcontroller.js"></script>
+    <script src="js/main.js"></script>
+
+    <!-- import style sheet -->
+    <link rel="stylesheet" type="text/css" media="screen" href="style.css">
+
+</head>
+
+<body onLoad="main()">
+    <pre id="error"></pre>
+
+    <!-- we create a script for each shader -->
+    <script id="vertex-simple" type="x-shader/x-vertex">
+    	void main()
+      {
+        //projectionMatrix, modelViewMatrix and position are built-in uniform variables
+        //gl_Position is the predefined output variable
+        //this operation transforms the vertex position to clip space
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    	}
+    </script>
+
+    <script id="fragment-simple" type="x-shader/x-fragment">
+    	void main()
+      {
+        //this colors all fragments (pixels) in the same color (RGBA)
+    		gl_FragColor = vec4(0.1, 0.3, 0.8, 1.0);
+    	}
+    </script>
+
+    <script id="vertex-dynamic" type="x-shader/x-vertex">
+
+      //the variable magnitude is passed through from Javascript
+      uniform float magnitude;
+
+      //we create a varying variable "vNormal" to pass the normal to the fragment shader
+      varying vec3 vNormal;
+    	void main()
+      {
+        //normal is a built-in uniform, like projectionMatrix, modelViewMatrix and position
+        vNormal = normal;
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    	}
+    </script>
+
+    <script id="fragment-dynamic" type="x-shader/x-fragment">
+
+      //the variable magnitude is passed through from Javascript
+      uniform float magnitude;
+
+      //the normal is passed through from the vertex shader. Currently not used.
+      varying vec3 vNormal;
+    	void main()
+      {
+         float colorValue = max(0.2, min(1.0, magnitude));
+         gl_FragColor = vec4(vec3(colorValue, 0.0, 0.0) / 2.0 ,1.0);
+    	}
+    </script>
+
+    <script id="vertex-flat" type="x-shader/x-vertex">
+
+      //the variable magnitude is passed through from Javascript
+      uniform float magnitude;
+
+      //we create a varying variable "vNormal" to pass the normal to the fragment shader
+      varying vec3 vNormal;
+    	void main()
+      {
+        //normal is a built-in uniform, like projectionMatrix, modelViewMatrix and position
+        vNormal = normal;
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    	}
+    </script>
+
+    <script id="fragment-flat" type="x-shader/x-fragment">
+
+      //the variable magnitude is passed through from Javascript
+      uniform float magnitude;
+
+      //the normal is passed through from the vertex shader. Currently not used.
+      varying vec3 vNormal;
+    	void main()
+      {
+        gl_FragColor = vec4((vNormal + 0.5) * 0.65 * magnitude , 1.0);
+    	}
+    </script>
+
+</body>
+</html>

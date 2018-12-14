@@ -78,8 +78,8 @@ SceneController.prototype.setupControls = function()
 // check out this very simple shader example https://gist.github.com/kylemcdonald/9593057
 SceneController.prototype.setupGeometry = function()
 {
-    this.light3 = new THREE.PointLight( 0xffffff, 1, 100 );
-    this.light3.position.set( -10.0, 10.0, 10.0 );
+    this.light3 = new THREE.PointLight( 0xffffff, 1, 2 );
+    this.light3.position.set( -1.0, 0.0, 1.0 );
     this.scene.add( this.light3 );
     this.lightWorldPos = new THREE.Vector3();
     this.light3.getWorldPosition(this.lightWorldPos);

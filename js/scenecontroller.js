@@ -22,6 +22,7 @@ SceneController.prototype.setup = function()
     this.setupControls();
     this.setupLight();
     this.setupGeometry();
+    this.AdjustLightPosition();
 
     this.render();
     this.animate();
@@ -33,14 +34,48 @@ SceneController.prototype.setupGUI = function()
     this.params = {
         screenController : this,
         magnitude : .75,
-        shader : 'simple'
+        shader : 'simple',
+        lightX: -1.0,
+        lightY: 0.0,
+        lightZ: 1.0,
     };
 
     this.gui.add(this.params, 'magnitude', 0.0, 1.0).name("Magnitude").onChange(function(newValue){this.object.screenController.updateModel()});
     this.gui.add(this.params, 'shader', [ 'simple', 'dynamic', 'flat', 'Gouraud'] ).name('Shader').onChange(function(newValue){this.object.screenController.changeShader()});
+    this.lightXValue = this.gui.add(this.params, 'lightX', -1.0,1.0).name("lightX");
+    this.lightYValue = this.gui.add(this.params, 'lightY', -1.0,1.0).name("lightY");
+    this.lightZValue = this.gui.add(this.params, 'lightZ', -1.0,1.0).name("lightZ");
+
 
     this.gui.open();
 }
+
+
+SceneController.prototype.AdjustLightPosition = function()
+{
+    const self = this;
+
+    self.lightXValue.onChange(function(value) {
+        self.light3.position.x = value;
+        self.meshSphere2.position.x = value;
+        self.uniforms.lightPositionX.value = value;
+        self.render();
+    });
+
+    self.lightYValue.onChange(function(value) {
+        self.light3.position.y = value;
+        self.meshSphere2.position.y = value;
+        self.uniforms.lightPositionY.value = value;
+        self.render();
+    });
+
+    self.lightZValue.onChange(function(value) {
+        self.light3.position.z = value;
+        self.meshSphere2.position.z = value;
+        self.uniforms.lightPositionZ.value = value;
+        self.render();
+    });
+};
 
 SceneController.prototype.setupCamera = function()
 {
@@ -112,6 +147,14 @@ SceneController.prototype.setupGeometry = function()
 
   	this.mesh = new THREE.Mesh( this.geometry, this.material );
     this.scene.add( this.mesh );
+
+    var sphereGeometry2 = new THREE.SphereGeometry(0.03, 30, 30);
+    this.lightMaterial = new THREE.MeshLambertMaterial( {
+        color: "yellow",
+    } );
+    this.meshSphere2 = new THREE.Mesh( sphereGeometry2, this.lightMaterial );
+    this.meshSphere2.position.copy(this.light3.position);
+    this.scene.add( this.meshSphere2 );
     console.log(this.scene);
 }
 

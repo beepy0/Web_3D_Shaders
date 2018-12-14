@@ -119,7 +119,7 @@
         //normal is a built-in uniform, like projectionMatrix, modelViewMatrix and position
         vec3 incomingLight = vec3(lightPositionX, lightPositionY, lightPositionZ);
         vec4 vertexWorldPos = modelMatrix * vec4(position, 1.0);
-        vec3 surfaceToLightL = incomingLight - vertexWorldPos.xyz;
+        vec3 surfaceToLightL = normalize(incomingLight - vertexWorldPos.xyz);
         vec3 surfaceToCameraE = cameraPosition - vertexWorldPos.xyz;
         vec3 refractionVectorR = (2.0 * (normal * (dot(normal, surfaceToLightL)))) - surfaceToLightL;
         float diffuseReflectionRs = 0.3 * pow(dot(refractionVectorR, surfaceToCameraE), magnitude);

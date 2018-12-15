@@ -117,11 +117,12 @@
     	void main()
       {
         //normal is a built-in uniform, like projectionMatrix, modelViewMatrix and position
+        vNormal = normalMatrix * normal;
         vec3 incomingLight = normalize(vec3(lightPositionX, lightPositionY, lightPositionZ));
         vec4 vertexWorldPos = modelMatrix * vec4(position, 1.0);
         vec3 surfaceToLightL = normalize(incomingLight - vertexWorldPos.xyz);
         vec3 surfaceToCameraE = normalize(cameraPosition - vertexWorldPos.xyz);
-        vec3 refractionVectorR = normalize((2.0 * (normal * (dot(normal, surfaceToLightL)))) - surfaceToLightL);
+        vec3 refractionVectorR = normalize((2.0 * (vNormal * (dot(vNormal, surfaceToLightL)))) - surfaceToLightL);
         float diffuseReflectionRs = 0.3 * pow(dot(refractionVectorR, surfaceToCameraE), 3.0*magnitude);
         float reflectedSpecularRadianceLspec = 0.0;
         if (dot(refractionVectorR, surfaceToCameraE) > 0.0) {
@@ -151,30 +152,29 @@
     </script>
 
     <script id="vertex-Phong" type="x-shader/x-vertex">
-
       //the variable magnitude is passed through from Javascript
       uniform float magnitude;
-
       //we create a varying variable "vNormal" to pass the normal to the fragment shader
       varying vec3 vNormal;
       varying vec3 vPosition;
       varying mat4 vModelMatrix;
+      varying vec3 incomingLight;
+      varying vec4 vertexWorldPos;
 
     	void main()
       {
         //normal is a built-in uniform, like projectionMatrix, modelViewMatrix and position
-        vNormal = normal;
+        vNormal = normalMatrix * normal;
         vPosition = position;
         vModelMatrix = modelMatrix;
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     	}
     </script>
 
     <script id="fragment-Phong" type="x-shader/x-fragment">
       //the variable magnitude is passed through from Javascript
       uniform float magnitude;
-
       //the normal is passed through from the vertex shader. Currently not used.
       varying vec3 vNormal;
       varying vec3 vPosition;
@@ -221,7 +221,7 @@
     	void main()
       {
         //normal is a built-in uniform, like projectionMatrix, modelViewMatrix and position
-        vNormal = normal;
+        vNormal = normalMatrix * normal;
         vPosition = position;
         vModelMatrix = modelMatrix;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
@@ -250,8 +250,8 @@
         vec4 vertexWorldPos = vModelMatrix * vec4(vPosition, 1.0);
         vec3 incomingLight = normalize(vec3(lightPositionX, lightPositionY, lightPositionZ));
         vec3 calculatedCameraPosition = normalize(vec3(cameraPositionX, cameraPositionY, cameraPositionZ));
-        vec3 surfaceToLightL = normalize(incomingLight - vertexWorldPos.xyz);
-        vec3 surfaceToCameraE = normalize(calculatedCameraPosition - vertexWorldPos.xyz);
+        vec3 surfaceToLightL = incomingLight - vertexWorldPos.xyz;
+        vec3 surfaceToCameraE = calculatedCameraPosition - vertexWorldPos.xyz;
         vec3 vectorsToNormalize = surfaceToCameraE + surfaceToLightL;
         vec3 bisectorH = normalize(vectorsToNormalize);
         float gammaHalfed = dot(vNormal, bisectorH);
@@ -281,7 +281,7 @@
     	void main()
       {
         //normal is a built-in uniform, like projectionMatrix, modelViewMatrix and position
-        vNormal = normal;
+        vNormal = normalMatrix * normal;
         vPosition = position;
         vModelMatrix = modelMatrix;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);

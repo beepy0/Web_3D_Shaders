@@ -123,12 +123,12 @@ SceneController.prototype.setupGeometry = function()
     //expand the uniforms array for passing more values to the shader
 		this.uniforms = {
 			magnitude: { type: "f", value: this.params.magnitude },
-            lightPositionX: { type: "f", value: this.lightWorldPos.x},
-            lightPositionY: { type: "f", value: this.lightWorldPos.y},
-            lightPositionZ: { type: "f", value: this.lightWorldPos.z},
-            cameraPositionX: { type: "f", value: this.cameraWorldPos.x},
-            cameraPositionY: { type: "f", value: this.cameraWorldPos.y},
-            cameraPositionZ: { type: "f", value: this.cameraWorldPos.z},
+            lightPositionX: { type: "f", value: this.light3.position.x},
+            lightPositionY: { type: "f", value: this.light3.position.y},
+            lightPositionZ: { type: "f", value: this.light3.position.z},
+            cameraPositionX: { type: "f", value: this.camera.position.x},
+            cameraPositionY: { type: "f", value: this.camera.position.y},
+            cameraPositionZ: { type: "f", value: this.camera.position.z},
 		};
     this.material = new THREE.ShaderMaterial( {
       uniforms : this.uniforms,
@@ -188,8 +188,16 @@ SceneController.prototype.animate = function()
 {
   //bind? --> https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
 	requestAnimationFrame( this.animate.bind(this) );
-  this.stats.update();
+    this.stats.update();
 	this.controls.update();
+	this.updateCameraCoordinates();
+}
+
+SceneController.prototype.updateCameraCoordinates = function()
+{
+    this.uniforms.cameraPositionX.value = this.camera.position.x;
+    this.uniforms.cameraPositionY.value = this.camera.position.y;
+    this.uniforms.cameraPositionZ.value = this.camera.position.z;
 }
 
 SceneController.prototype.updateModel = function()

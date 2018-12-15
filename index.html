@@ -122,10 +122,10 @@
         vec3 surfaceToLightL = normalize(incomingLight - vertexWorldPos.xyz);
         vec3 surfaceToCameraE = cameraPosition - vertexWorldPos.xyz;
         vec3 refractionVectorR = (2.0 * (normal * (dot(normal, surfaceToLightL)))) - surfaceToLightL;
-        float diffuseReflectionRs = 0.3 * pow(dot(refractionVectorR, surfaceToCameraE), magnitude);
+        float diffuseReflectionRs = 0.3 * pow(dot(refractionVectorR, surfaceToCameraE), 3.0*magnitude);
         float reflectedSpecularRadianceLspec = 0.0;
         if (dot(refractionVectorR, surfaceToCameraE) > 0.0) {
-            reflectedSpecularRadianceLspec = diffuseReflectionRs * 1.0 * pow(dot(refractionVectorR, surfaceToCameraE), magnitude);
+            reflectedSpecularRadianceLspec = diffuseReflectionRs * 1.0 * pow(dot(refractionVectorR, surfaceToCameraE), 3.0*magnitude);
         }
         luminance = reflectedSpecularRadianceLspec;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
@@ -197,10 +197,10 @@
     	void main()
       {
 
-        float diffuseReflectionRs = 0.3 * pow(dot(refractionVectorR, surfaceToCameraE), magnitude);
+        float diffuseReflectionRs = 0.3 * pow(dot(refractionVectorR, surfaceToCameraE), 3.0*magnitude);
         float reflectedSpecularRadianceLspec = 0.0;
         if (dot(refractionVectorR, surfaceToCameraE) > 0.0) {
-            reflectedSpecularRadianceLspec = diffuseReflectionRs * 1.0 * pow(dot(refractionVectorR, surfaceToCameraE), magnitude);
+            reflectedSpecularRadianceLspec = diffuseReflectionRs * 1.0 * pow(dot(refractionVectorR, surfaceToCameraE), 3.0*magnitude);
         }
         float luminance = reflectedSpecularRadianceLspec;
         float lumX = min(0.5 + luminance, 1.0);
@@ -257,16 +257,70 @@
     	void main()
       {
         float gammaHalfed = dot(vNormal, bisectorH);
-        float diffuseReflectionRs = 0.3 * pow((2.0 * gammaHalfed), magnitude);
+        float diffuseReflectionRs = 0.3 * pow((2.0 * gammaHalfed), 3.0*magnitude);
         float reflectedSpecularRadianceLspec = 0.0;
         if (dot(bisectorH, vNormal) > 0.0) {
-            reflectedSpecularRadianceLspec = diffuseReflectionRs * 1.0 * pow(dot(bisectorH, vNormal), magnitude);
+            reflectedSpecularRadianceLspec = diffuseReflectionRs * 1.0 * pow(dot(bisectorH, vNormal), 3.0*magnitude);
         }
         float luminance = reflectedSpecularRadianceLspec;
         float lumX = min(0.5 + luminance, 1.0);
         float lumY = min(0.0 + luminance, 1.0);
         float lumZ = min(0.5 + luminance, 1.0);
         gl_FragColor = vec4(vec3(lumX, lumY, lumZ) , 1.0);
+    	}
+    </script>
+
+    <script id="vertex-toon" type="x-shader/x-vertex">
+      // NOTICE: The exercise said this is independent of light source but the video demonstrates it as dependent on
+      // light source, so I implemented it like that as well.
+
+
+      //the variable magnitude is passed through from Javascript
+      uniform float magnitude;
+
+      //we create a varying variable "vNormal" to pass the normal to the fragment shader
+      varying float luminance;
+
+      uniform float lightPositionX;
+      uniform float lightPositionY;
+      uniform float lightPositionZ;
+
+    	void main()
+      {
+        //normal is a built-in uniform, like projectionMatrix, modelViewMatrix and position
+        vec4 vertexWorldPos = modelMatrix * vec4(position, 1.0);
+        vec3 incomingLight = vec3(lightPositionX, lightPositionY, lightPositionZ);
+        vec3 surfaceToLightL = normalize(incomingLight - vertexWorldPos.xyz);
+        luminance = dot(surfaceToLightL, normal);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+
+    	}
+    </script>
+
+    <script id="fragment-toon" type="x-shader/x-fragment">
+
+      //the variable magnitude is passed through from Javascript
+      uniform float magnitude;
+
+      //the normal is passed through from the vertex shader. Currently not used.
+      varying float luminance;
+
+    	void main()
+      {
+        float finalLuminance;
+        if (luminance < 0.25) {
+            finalLuminance = 0.25;
+        }
+        if (luminance > 0.25) {
+            finalLuminance = 0.5;
+        }
+        if (luminance > 0.5) {
+            finalLuminance = 0.75;
+        }
+        if (luminance > 0.75) {
+            finalLuminance = 1.0;
+        }
+        gl_FragColor = vec4( vec3(0.5, 0.0, 0.5) * 3.0*magnitude * finalLuminance , 1.0 );
     	}
     </script>
 

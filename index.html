@@ -210,5 +210,65 @@
     	}
     </script>
 
+    <script id="vertex-Blinn-Phong" type="x-shader/x-vertex">
+
+      //the variable magnitude is passed through from Javascript
+      uniform float magnitude;
+
+      //we create a varying variable "vNormal" to pass the normal to the fragment shader
+      varying vec3 vNormal;
+      varying vec3 incomingLight;
+      varying vec4 vertexWorldPos;
+      varying vec3 surfaceToLightL;
+      varying vec3 surfaceToCameraE;
+      varying vec3 bisectorH;
+
+      uniform float lightPositionX;
+      uniform float lightPositionY;
+      uniform float lightPositionZ;
+
+    	void main()
+      {
+        //normal is a built-in uniform, like projectionMatrix, modelViewMatrix and position
+        vNormal = normal;
+        incomingLight = vec3(lightPositionX, lightPositionY, lightPositionZ);
+        vertexWorldPos = modelMatrix * vec4(position, 1.0);
+        surfaceToLightL = normalize(incomingLight - vertexWorldPos.xyz);
+        surfaceToCameraE = cameraPosition - vertexWorldPos.xyz;
+        vec3 vectorsToNormalize = surfaceToCameraE + surfaceToLightL;
+        bisectorH = normalize(vectorsToNormalize);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+
+    	}
+    </script>
+
+    <script id="fragment-Blinn-Phong" type="x-shader/x-fragment">
+      //the variable magnitude is passed through from Javascript
+      uniform float magnitude;
+
+      //the normal is passed through from the vertex shader. Currently not used.
+      varying vec3 vNormal;
+      varying vec3 incomingLight;
+      varying vec4 vertexWorldPos;
+      varying vec3 surfaceToLightL;
+      varying vec3 surfaceToCameraE;
+      varying vec3 bisectorH;
+
+    	void main()
+      {
+        float gammaHalfed = dot(vNormal, bisectorH);
+        float diffuseReflectionRs = 0.3 * pow((2.0 * gammaHalfed), magnitude);
+        float reflectedSpecularRadianceLspec = 0.0;
+        if (dot(bisectorH, vNormal) > 0.0) {
+            reflectedSpecularRadianceLspec = diffuseReflectionRs * 1.0 * pow(dot(bisectorH, vNormal), magnitude);
+        }
+        float luminance = reflectedSpecularRadianceLspec;
+        float lumX = min(0.5 + luminance, 1.0);
+        float lumY = min(0.0 + luminance, 1.0);
+        float lumZ = min(0.5 + luminance, 1.0);
+        gl_FragColor = vec4(vec3(lumX, lumY, lumZ) , 1.0);
+    	}
+    </script>
+
 </body>
 </html>

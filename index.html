@@ -157,25 +157,15 @@
 
       //we create a varying variable "vNormal" to pass the normal to the fragment shader
       varying vec3 vNormal;
-      varying vec3 incomingLight;
-      varying vec4 vertexWorldPos;
-      varying vec3 surfaceToLightL;
-      varying vec3 surfaceToCameraE;
-      varying vec3 refractionVectorR;
-
-      uniform float lightPositionX;
-      uniform float lightPositionY;
-      uniform float lightPositionZ;
+      varying vec3 vPosition;
+      varying mat4 vModelMatrix;
 
     	void main()
       {
         //normal is a built-in uniform, like projectionMatrix, modelViewMatrix and position
         vNormal = normal;
-        incomingLight = normalize(vec3(lightPositionX, lightPositionY, lightPositionZ));
-        vertexWorldPos = modelMatrix * vec4(position, 1.0);
-        surfaceToLightL = normalize(incomingLight - vertexWorldPos.xyz);
-        surfaceToCameraE = normalize(cameraPosition - vertexWorldPos.xyz);
-        refractionVectorR = normalize((2.0 * (normal * (dot(normal, surfaceToLightL)))) - surfaceToLightL);
+        vPosition = position;
+        vModelMatrix = modelMatrix;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 
     	}
@@ -187,15 +177,24 @@
 
       //the normal is passed through from the vertex shader. Currently not used.
       varying vec3 vNormal;
-      varying vec3 incomingLight;
-      varying vec4 vertexWorldPos;
-      varying vec3 surfaceToLightL;
-      varying vec3 surfaceToCameraE;
-      varying vec3 refractionVectorR;
+      varying vec3 vPosition;
+      varying mat4 vModelMatrix;
+
+      uniform float lightPositionX;
+      uniform float lightPositionY;
+      uniform float lightPositionZ;
+      uniform float cameraPositionX;
+      uniform float cameraPositionY;
+      uniform float cameraPositionZ;
 
     	void main()
       {
-
+        vec4 vertexWorldPos = vModelMatrix * vec4(vPosition, 1.0);
+        vec3 incomingLight = normalize(vec3(lightPositionX, lightPositionY, lightPositionZ));
+        vec3 calculatedCameraPosition = normalize(vec3(cameraPositionX, cameraPositionY, cameraPositionZ));
+        vec3 surfaceToLightL = normalize(incomingLight - vertexWorldPos.xyz);
+        vec3 surfaceToCameraE = normalize(calculatedCameraPosition - vertexWorldPos.xyz);
+        vec3 refractionVectorR = normalize((2.0 * (vNormal * (dot(vNormal, surfaceToLightL)))) - surfaceToLightL);
         float diffuseReflectionRs = 0.5 * pow(dot(refractionVectorR, surfaceToCameraE), 4.5*magnitude);
         float reflectedSpecularRadianceLspec = 0.0;
         if (dot(refractionVectorR, surfaceToCameraE) > 0.0) {
@@ -216,26 +215,15 @@
 
       //we create a varying variable "vNormal" to pass the normal to the fragment shader
       varying vec3 vNormal;
-      varying vec3 incomingLight;
-      varying vec4 vertexWorldPos;
-      varying vec3 surfaceToLightL;
-      varying vec3 surfaceToCameraE;
-      varying vec3 bisectorH;
-
-      uniform float lightPositionX;
-      uniform float lightPositionY;
-      uniform float lightPositionZ;
+      varying vec3 vPosition;
+      varying mat4 vModelMatrix;
 
     	void main()
       {
         //normal is a built-in uniform, like projectionMatrix, modelViewMatrix and position
         vNormal = normal;
-        incomingLight = vec3(lightPositionX, lightPositionY, lightPositionZ);
-        vertexWorldPos = modelMatrix * vec4(position, 1.0);
-        surfaceToLightL = normalize(incomingLight - vertexWorldPos.xyz);
-        surfaceToCameraE = cameraPosition - vertexWorldPos.xyz;
-        vec3 vectorsToNormalize = surfaceToCameraE + surfaceToLightL;
-        bisectorH = normalize(vectorsToNormalize);
+        vPosition = position;
+        vModelMatrix = modelMatrix;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 
     	}
@@ -247,14 +235,25 @@
 
       //the normal is passed through from the vertex shader. Currently not used.
       varying vec3 vNormal;
-      varying vec3 incomingLight;
-      varying vec4 vertexWorldPos;
-      varying vec3 surfaceToLightL;
-      varying vec3 surfaceToCameraE;
-      varying vec3 bisectorH;
+      varying vec3 vPosition;
+      varying mat4 vModelMatrix;
+
+      uniform float lightPositionX;
+      uniform float lightPositionY;
+      uniform float lightPositionZ;
+      uniform float cameraPositionX;
+      uniform float cameraPositionY;
+      uniform float cameraPositionZ;
 
     	void main()
       {
+        vec4 vertexWorldPos = vModelMatrix * vec4(vPosition, 1.0);
+        vec3 incomingLight = normalize(vec3(lightPositionX, lightPositionY, lightPositionZ));
+        vec3 calculatedCameraPosition = normalize(vec3(cameraPositionX, cameraPositionY, cameraPositionZ));
+        vec3 surfaceToLightL = normalize(incomingLight - vertexWorldPos.xyz);
+        vec3 surfaceToCameraE = normalize(calculatedCameraPosition - vertexWorldPos.xyz);
+        vec3 vectorsToNormalize = surfaceToCameraE + surfaceToLightL;
+        vec3 bisectorH = normalize(vectorsToNormalize);
         float gammaHalfed = dot(vNormal, bisectorH);
         float diffuseReflectionRs = 0.3 * pow((2.0 * gammaHalfed), 2.0*magnitude);
         float reflectedSpecularRadianceLspec = 0.0;

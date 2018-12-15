@@ -118,12 +118,17 @@ SceneController.prototype.setupGeometry = function()
     this.scene.add( this.light3 );
     this.lightWorldPos = new THREE.Vector3();
     this.light3.getWorldPosition(this.lightWorldPos);
+    this.cameraWorldPos = new THREE.Vector3();
+    this.camera.getWorldPosition(this.cameraWorldPos);
     //expand the uniforms array for passing more values to the shader
 		this.uniforms = {
 			magnitude: { type: "f", value: this.params.magnitude },
             lightPositionX: { type: "f", value: this.lightWorldPos.x},
             lightPositionY: { type: "f", value: this.lightWorldPos.y},
             lightPositionZ: { type: "f", value: this.lightWorldPos.z},
+            cameraPositionX: { type: "f", value: this.cameraWorldPos.x},
+            cameraPositionY: { type: "f", value: this.cameraWorldPos.y},
+            cameraPositionZ: { type: "f", value: this.cameraWorldPos.z},
 		};
     this.material = new THREE.ShaderMaterial( {
       uniforms : this.uniforms,

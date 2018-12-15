@@ -117,11 +117,11 @@
     	void main()
       {
         //normal is a built-in uniform, like projectionMatrix, modelViewMatrix and position
-        vec3 incomingLight = vec3(lightPositionX, lightPositionY, lightPositionZ);
+        vec3 incomingLight = normalize(vec3(lightPositionX, lightPositionY, lightPositionZ));
         vec4 vertexWorldPos = modelMatrix * vec4(position, 1.0);
         vec3 surfaceToLightL = normalize(incomingLight - vertexWorldPos.xyz);
-        vec3 surfaceToCameraE = cameraPosition - vertexWorldPos.xyz;
-        vec3 refractionVectorR = (2.0 * (normal * (dot(normal, surfaceToLightL)))) - surfaceToLightL;
+        vec3 surfaceToCameraE = normalize(cameraPosition - vertexWorldPos.xyz);
+        vec3 refractionVectorR = normalize((2.0 * (normal * (dot(normal, surfaceToLightL)))) - surfaceToLightL);
         float diffuseReflectionRs = 0.3 * pow(dot(refractionVectorR, surfaceToCameraE), 3.0*magnitude);
         float reflectedSpecularRadianceLspec = 0.0;
         if (dot(refractionVectorR, surfaceToCameraE) > 0.0) {
@@ -129,7 +129,6 @@
         }
         luminance = reflectedSpecularRadianceLspec;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-
     	}
     </script>
 
@@ -172,11 +171,11 @@
       {
         //normal is a built-in uniform, like projectionMatrix, modelViewMatrix and position
         vNormal = normal;
-        incomingLight = vec3(lightPositionX, lightPositionY, lightPositionZ);
+        incomingLight = normalize(vec3(lightPositionX, lightPositionY, lightPositionZ));
         vertexWorldPos = modelMatrix * vec4(position, 1.0);
         surfaceToLightL = normalize(incomingLight - vertexWorldPos.xyz);
-        surfaceToCameraE = cameraPosition - vertexWorldPos.xyz;
-        refractionVectorR = (2.0 * (normal * (dot(normal, surfaceToLightL)))) - surfaceToLightL;
+        surfaceToCameraE = normalize(cameraPosition - vertexWorldPos.xyz);
+        refractionVectorR = normalize((2.0 * (normal * (dot(normal, surfaceToLightL)))) - surfaceToLightL);
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 
     	}
@@ -271,7 +270,7 @@
     </script>
 
     <script id="vertex-toon" type="x-shader/x-vertex">
-    
+
       //the variable magnitude is passed through from Javascript
       uniform float magnitude;
 

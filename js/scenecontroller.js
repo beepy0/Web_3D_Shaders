@@ -41,7 +41,7 @@ SceneController.prototype.setupGUI = function()
     };
 
     this.gui.add(this.params, 'magnitude', 0.0, 1.0).name("Magnitude").onChange(function(newValue){this.object.screenController.updateModel()});
-    this.gui.add(this.params, 'shader', [ 'simple', 'dynamic', 'flat', 'Gouraud'] ).name('Shader').onChange(function(newValue){this.object.screenController.changeShader()});
+    this.gui.add(this.params, 'shader', [ 'simple', 'dynamic', 'flat', 'Gouraud', 'Phong'] ).name('Shader').onChange(function(newValue){this.object.screenController.changeShader()});
     this.lightXValue = this.gui.add(this.params, 'lightX', -1.0,1.0).name("lightX");
     this.lightYValue = this.gui.add(this.params, 'lightY', -1.0,1.0).name("lightY");
     this.lightZValue = this.gui.add(this.params, 'lightZ', -1.0,1.0).name("lightZ");

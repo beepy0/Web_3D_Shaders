@@ -197,7 +197,7 @@
     	void main()
       {
 
-        float diffuseReflectionRs = 0.3 * pow(dot(refractionVectorR, surfaceToCameraE), 4.5*magnitude);
+        float diffuseReflectionRs = 0.5 * pow(dot(refractionVectorR, surfaceToCameraE), 4.5*magnitude);
         float reflectedSpecularRadianceLspec = 0.0;
         if (dot(refractionVectorR, surfaceToCameraE) > 0.0) {
             reflectedSpecularRadianceLspec = diffuseReflectionRs * 1.0 * pow(dot(refractionVectorR, surfaceToCameraE), 4.5*magnitude);
@@ -271,15 +271,17 @@
     </script>
 
     <script id="vertex-toon" type="x-shader/x-vertex">
-      // NOTICE: The exercise said this is independent of light source but the video demonstrates it as dependent on
-      // light source, so I implemented it like that as well.
-
-
+    
       //the variable magnitude is passed through from Javascript
       uniform float magnitude;
 
       //we create a varying variable "vNormal" to pass the normal to the fragment shader
-      varying float luminance;
+      varying vec3 vNormal;
+      varying vec3 incomingLight;
+      varying vec4 vertexWorldPos;
+      varying vec3 surfaceToLightL;
+      varying vec3 surfaceToCameraE;
+      varying vec3 bisectorH;
 
       uniform float lightPositionX;
       uniform float lightPositionY;
@@ -288,10 +290,13 @@
     	void main()
       {
         //normal is a built-in uniform, like projectionMatrix, modelViewMatrix and position
-        vec4 vertexWorldPos = modelMatrix * vec4(position, 1.0);
-        vec3 incomingLight = vec3(lightPositionX, lightPositionY, lightPositionZ);
-        vec3 surfaceToLightL = normalize(incomingLight - vertexWorldPos.xyz);
-        luminance = dot(surfaceToLightL, normal);
+        vNormal = normal;
+        incomingLight = vec3(lightPositionX, lightPositionY, lightPositionZ);
+        vertexWorldPos = modelMatrix * vec4(position, 1.0);
+        surfaceToLightL = normalize(incomingLight - vertexWorldPos.xyz);
+        surfaceToCameraE = cameraPosition - vertexWorldPos.xyz;
+        vec3 vectorsToNormalize = surfaceToCameraE + surfaceToLightL;
+        bisectorH = normalize(vectorsToNormalize);
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 
     	}
@@ -303,10 +308,22 @@
       uniform float magnitude;
 
       //the normal is passed through from the vertex shader. Currently not used.
-      varying float luminance;
+      varying vec3 vNormal;
+      varying vec3 incomingLight;
+      varying vec4 vertexWorldPos;
+      varying vec3 surfaceToLightL;
+      varying vec3 surfaceToCameraE;
+      varying vec3 bisectorH;
 
     	void main()
       {
+        float gammaHalfed = dot(vNormal, bisectorH);
+        float diffuseReflectionRs = 1.0 * pow(gammaHalfed, 1.0*magnitude);
+        float reflectedSpecularRadianceLspec = 0.0;
+        if (dot(bisectorH, vNormal) > 0.0) {
+            reflectedSpecularRadianceLspec = diffuseReflectionRs * 1.0 * pow(dot(bisectorH, vNormal), 1.0*magnitude);
+        }
+        float luminance = reflectedSpecularRadianceLspec;
         float finalLuminance;
         if (luminance < 0.25) {
             finalLuminance = 0.25;

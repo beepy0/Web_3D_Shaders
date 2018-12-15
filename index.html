@@ -197,10 +197,10 @@
     	void main()
       {
 
-        float diffuseReflectionRs = 0.3 * pow(dot(refractionVectorR, surfaceToCameraE), 3.0*magnitude);
+        float diffuseReflectionRs = 0.3 * pow(dot(refractionVectorR, surfaceToCameraE), 4.5*magnitude);
         float reflectedSpecularRadianceLspec = 0.0;
         if (dot(refractionVectorR, surfaceToCameraE) > 0.0) {
-            reflectedSpecularRadianceLspec = diffuseReflectionRs * 1.0 * pow(dot(refractionVectorR, surfaceToCameraE), 3.0*magnitude);
+            reflectedSpecularRadianceLspec = diffuseReflectionRs * 1.0 * pow(dot(refractionVectorR, surfaceToCameraE), 4.5*magnitude);
         }
         float luminance = reflectedSpecularRadianceLspec;
         float lumX = min(0.5 + luminance, 1.0);
@@ -257,10 +257,10 @@
     	void main()
       {
         float gammaHalfed = dot(vNormal, bisectorH);
-        float diffuseReflectionRs = 0.3 * pow((2.0 * gammaHalfed), 3.0*magnitude);
+        float diffuseReflectionRs = 0.3 * pow((2.0 * gammaHalfed), 2.0*magnitude);
         float reflectedSpecularRadianceLspec = 0.0;
         if (dot(bisectorH, vNormal) > 0.0) {
-            reflectedSpecularRadianceLspec = diffuseReflectionRs * 1.0 * pow(dot(bisectorH, vNormal), 3.0*magnitude);
+            reflectedSpecularRadianceLspec = diffuseReflectionRs * 1.0 * pow(dot(bisectorH, vNormal), 2.0*magnitude);
         }
         float luminance = reflectedSpecularRadianceLspec;
         float lumX = min(0.5 + luminance, 1.0);

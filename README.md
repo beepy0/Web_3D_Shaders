@@ -1,5 +1,7 @@
 # Browser_3D_Shaders
 
+<img src="/demo_gifs/web_3D_shaders.gif" width=700/>
+
 A 3D browser environment that simulates a few different shading techniques. [Demo link](https://computer-graphics-shaders.herokuapp.com/)
 
 - Uses [THREE.js](https://threejs.org/) to render 3D environments

@@ -10,3 +10,7 @@ A 3D browser environment that simulates a few different shading techniques. [Dem
 - Switch shaders from the dropdown menu
 - Magnitude corresponds to the strength of the shader
 - lightX/Y/Z will move the light source in the X/Y/Z dimension
+
+## Notes
+- THREE.js is a JavaScript 3D-rendering library, so the entirety of the implementation can be found in `index.html`
+- This is one of my earlier projects, before I read anything on Clean Code.

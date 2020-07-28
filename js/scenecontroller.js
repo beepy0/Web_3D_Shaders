@@ -34,7 +34,7 @@ SceneController.prototype.setupGUI = function()
     this.params = {
         screenController : this,
         magnitude : .75,
-        shader : 'simple',
+        shader : 'Gouraud',
         lightX: -1.0,
         lightY: 0.0,
         lightZ: 1.0,
@@ -86,7 +86,7 @@ SceneController.prototype.setupCamera = function()
 
   // https://threejs.org/docs/#api/cameras/PerspectiveCamera
 	this.camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT_RATIO, NEAR_PLANE, FAR_PLANE );
-	this.camera.position.z = 1;
+	this.camera.position.z = 2;
   this.camera.lookAt(this.scene.position);
 }
 
@@ -132,8 +132,8 @@ SceneController.prototype.setupGeometry = function()
 		};
     this.material = new THREE.ShaderMaterial( {
       uniforms : this.uniforms,
-      vertexShader: document.getElementById( 'vertex-simple' ).textContent,
-      fragmentShader: document.getElementById( 'fragment-simple' ).textContent
+      vertexShader: document.getElementById( 'vertex-Gouraud' ).textContent,
+      fragmentShader: document.getElementById( 'fragment-Gouraud' ).textContent
     });
 
     var boxGeometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 );

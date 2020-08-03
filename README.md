@@ -15,5 +15,5 @@ A 3D browser environment that simulates a few different shading techniques. [Dem
 - It is a full 3D environment, you can zoom-in/-out (scroll-wheel), rotate the view (left mouse button), or pan the view (right mouse button)
 
 ## Notes
-- THREE.js is a JavaScript 3D-rendering library, so the entirety of the implementation can be found in `index.html`
+- THREE.js is a JavaScript 3D-rendering library, so the entirety of the implementation can be found in `index.html` and the corresponding javascript code under `js/`
 - This is one of my earlier projects, before I read anything on Clean Code.
